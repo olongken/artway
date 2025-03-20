@@ -1,4 +1,7 @@
-// navigation.tsx
+# Seni Visual App - Kod Sumber Utama
+
+## 1. Navigation Component (navigation.tsx)
+```tsx
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Book, Image, Video, GraduationCap } from "lucide-react";
@@ -51,8 +54,10 @@ export function Navigation() {
     </header>
   );
 }
+```
 
-// content-card.tsx
+## 2. Content Card Component (content-card.tsx)
+```tsx
 import { Card, CardContent } from "@/components/ui/card";
 import { type Content } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
@@ -89,8 +94,10 @@ export function ContentCard({ content }: ContentCardProps) {
     </Card>
   );
 }
+```
 
-// schema.ts
+## 3. Schema Definition (schema.ts)
+```tsx
 import { pgTable, text, serial } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -113,11 +120,46 @@ export const contents = pgTable("contents", {
 export const insertContentSchema = createInsertSchema(contents).omit({ id: true });
 export type InsertContent = z.infer<typeof insertContentSchema>;
 export type Content = typeof contents.$inferSelect;
+```
 
-// theme.json
+## 4. Theme Configuration (theme.json)
+```json
 {
   "variant": "professional",
   "primary": "hsl(220 70% 50%)",
   "appearance": "light",
   "radius": 0.5
 }
+```
+
+# Halaman-halaman (pages)
+
+## 1. notes.tsx
+```tsx
+import { useQuery } from "@tanstack/react-query";
+import { type Content } from "@shared/schema";
+import { ContentCard } from "@/components/content/content-card";
+
+export default function Notes() {
+  const { data: notes, isLoading } = useQuery<Content[]>({
+    queryKey: ["/api/contents/type/note"],
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Nota Pembelajaran</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {notes?.map((note) => (
+          <ContentCard key={note.id} content={note} />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+(Teruskan dengan kod lain yang anda perlukan...)
