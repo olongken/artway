@@ -1,6 +1,4 @@
-# Seni Visual App - Kod Sumber Utama
 
-## 1. Navigation Component (navigation.tsx)
 ```tsx
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
@@ -56,7 +54,6 @@ export function Navigation() {
 }
 ```
 
-## 2. Content Card Component (content-card.tsx)
 ```tsx
 import { Card, CardContent } from "@/components/ui/card";
 import { type Content } from "@shared/schema";
@@ -96,7 +93,6 @@ export function ContentCard({ content }: ContentCardProps) {
 }
 ```
 
-## 3. Schema Definition (schema.ts)
 ```tsx
 import { pgTable, text, serial } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
@@ -122,7 +118,7 @@ export type InsertContent = z.infer<typeof insertContentSchema>;
 export type Content = typeof contents.$inferSelect;
 ```
 
-## 4. Theme Configuration (theme.json)
+
 ```json
 {
   "variant": "professional",
@@ -132,7 +128,7 @@ export type Content = typeof contents.$inferSelect;
 }
 ```
 
-# Halaman-halaman (pages)
+
 
 ## 1. notes.tsx
 ```tsx
@@ -162,4 +158,4 @@ export default function Notes() {
 }
 ```
 
-(Teruskan dengan kod lain yang anda perlukan...)
+
