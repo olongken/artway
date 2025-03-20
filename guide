@@ -1,10 +1,35 @@
-
-```tsx
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Book, Image, Video, GraduationCap } from "lucide-react";
 import { SearchBar } from "./search-bar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { pgTable, text, serial } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
 
+// Schema Definition
+export const contentTypes = ["note", "infographic", "video", "exam-guide"] as const;
+export type ContentType = typeof contentTypes[number];
+
+export const contents = pgTable("contents", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  type: text("type", { enum: contentTypes }).notNull(),
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  videoUrl: text("video_url"),
+  category: text("category").notNull(),
+  tags: text("tags").array(),
+});
+
+export const insertContentSchema = createInsertSchema(contents).omit({ id: true });
+export type InsertContent = z.infer<typeof insertContentSchema>;
+export type Content = typeof contents.$inferSelect;
+
+// Navigation Component
 export function Navigation() {
   const [location] = useLocation();
 
@@ -52,19 +77,9 @@ export function Navigation() {
     </header>
   );
 }
-```
 
-
-```tsx
-import { Card, CardContent } from "@/components/ui/card";
-import { type Content } from "@shared/schema";
-import { Badge } from "@/components/ui/badge";
-
-interface ContentCardProps {
-  content: Content;
-}
-
-export function ContentCard({ content }: ContentCardProps) {
+// Content Card Component
+export function ContentCard({ content }: { content: Content }) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       {content.imageUrl && (
@@ -92,51 +107,8 @@ export function ContentCard({ content }: ContentCardProps) {
     </Card>
   );
 }
-```
 
-```tsx
-import { pgTable, text, serial } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
-
-export const contentTypes = ["note", "infographic", "video", "exam-guide"] as const;
-export type ContentType = typeof contentTypes[number];
-
-export const contents = pgTable("contents", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  type: text("type", { enum: contentTypes }).notNull(),
-  content: text("content").notNull(),
-  imageUrl: text("image_url"),
-  videoUrl: text("video_url"),
-  category: text("category").notNull(),
-  tags: text("tags").array(),
-});
-
-export const insertContentSchema = createInsertSchema(contents).omit({ id: true });
-export type InsertContent = z.infer<typeof insertContentSchema>;
-export type Content = typeof contents.$inferSelect;
-```
-
-
-```json
-{
-  "variant": "professional",
-  "primary": "hsl(220 70% 50%)",
-  "appearance": "light",
-  "radius": 0.5
-}
-```
-
-
-
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-import { type Content } from "@shared/schema";
-import { ContentCard } from "@/components/content/content-card";
-
+// Notes Page Component
 export default function Notes() {
   const { data: notes, isLoading } = useQuery<Content[]>({
     queryKey: ["/api/contents/type/note"],
@@ -157,6 +129,3 @@ export default function Notes() {
     </div>
   );
 }
-```
-
-
